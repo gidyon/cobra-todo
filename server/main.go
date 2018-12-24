@@ -27,7 +27,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not listen on tcp :9090: %v\n", err)
 	}
-	log.Fatalln("Server started on port :9090, waiting for rpc calls...")
+	log.Println("Server started on port :9090, waiting for rpc calls...")
 	log.Fatalln(srv.Serve(l))
 }
 
