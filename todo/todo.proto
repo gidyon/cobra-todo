@@ -22,5 +22,5 @@ service TodoManager {
     rpc List(Void) returns (Todo) {}
     rpc Add(Task) returns (Void) {}
     rpc Delete(TaskId) returns (Void) {}
-    rpc Done(Task) returns (Void) {}
+    rpc Done(TaskId) returns (Void) {}
 }
