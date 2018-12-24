@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package todo;
+
+message Task {
+    string text = 1;
+    bool done = 2;
+    int32 task_id = 3;
+}
+
+message Todo {
+    repeated Task tasks = 1;
+}
+
+message Void {}
+
+message TaskId {
+    int32 task_id = 3;
+}
+
+service TodoManager {
+    rpc List(Void) returns (Todo) {}
+    rpc Add(Task) returns (Void) {}
+    rpc Delete(TaskId) returns (Void) {}
+    rpc Done(Task) returns (Void) {}
+}
