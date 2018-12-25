@@ -27,7 +27,7 @@ var doneCmd = &cobra.Command{
 	Use:   "done",
 	Short: "Marks task i todo with given id as done",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return done()
+		return done(cmd)
 	},
 }
 
@@ -37,8 +37,8 @@ func init() {
 	doneCmd.Flags().Int32P("id", "i", 0, "marks done task with given id")
 }
 
-func done() error {
-	d, err := rootCmd.Flags().GetInt32("id")
+func done(cmd *cobra.Command) error {
+	d, err := cmd.Flags().GetInt32("id")
 	if err != nil {
 		return fmt.Errorf("parsing done flag failed: %v", err)
 	}
@@ -48,6 +48,6 @@ func done() error {
 		return fmt.Errorf("could not mark task as done: %v", err)
 	}
 
-	fmt.Println("task marked as done successfully")
+	fmt.Printf("task with id: %v marked as done successfully\n", d)
 	return nil
 }

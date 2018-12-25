@@ -26,43 +26,78 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List the tasks in the todo",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return list()
+		return list(cmd)
 	},
 }
 
 func init() {
 	listCmd.Flags().BoolP("done", "d", false, "List tasks in todo that are done")
 	listCmd.Flags().BoolP("pending", "p", false, "List tasks in todo that are not done")
+	listCmd.Flags().BoolP("all", "a", false, "List all details of a task in todo")
 
 	rootCmd.AddCommand(listCmd)
 }
 
-func list() error {
+func list(cmd *cobra.Command) error {
 	l, err := client.List(ctx, &todo.Void{})
 	if err != nil {
 		return fmt.Errorf("could not fetch tasks: %v", err)
 	}
 
+	d, err := cmd.Flags().GetBool("done")
+	if err != nil {
+		return fmt.Errorf("parsing done flag failed: %v", err)
+	}
+	p, err := cmd.Flags().GetBool("pending")
+	if err != nil {
+		return fmt.Errorf("parsing pending flag failed: %v", err)
+	}
+	a, err := cmd.Flags().GetBool("all")
+	if err != nil {
+		return fmt.Errorf("parsing all flag failed: %v", err)
+	}
+
 	for _, task := range l.Tasks {
-		d, err := rootCmd.Flags().GetBool("done")
-		if err != nil {
-			return fmt.Errorf("parsing done flag failed: %v", err)
+		print := func(a bool) {
+			printTask := func() {
+				if a {
+					fmt.Printf(" task: %q, id: %d, done: %v\n", task.Text, task.TaskId, task.Done)
+					return
+				}
+				fmt.Printf(" %s\n", task.Text)
+			}
+			if d {
+				if task.Done {
+					fmt.Printf("😄 ")
+					printTask()
+				}
+				return
+			} else if p {
+				if !task.Done {
+					fmt.Printf("😦 ")
+					printTask()
+				}
+				return
+			}
+			if task.Done {
+				fmt.Printf("😄 ")
+			} else {
+				fmt.Printf("😦 ")
+			}
+			printTask()
 		}
-		p, err := rootCmd.Flags().GetBool("pending")
-		if err != nil {
-			return fmt.Errorf("parsing pending flag failed: %v", err)
+		if p && d {
+			print(a)
+			continue
 		}
 		if d {
-			if task.GetDone() {
-				fmt.Printf("😄")
-			}
+			print(a)
+			continue
+		} else if p {
+			print(a)
+			continue
 		}
-		if p {
-			if !task.GetDone() {
-				fmt.Printf("😦")
-			}
-		}
-		fmt.Printf(" %s\n", task.GetText())
+		print(a)
 	}
 
 	return nil

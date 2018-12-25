@@ -26,7 +26,7 @@ var delCmd = &cobra.Command{
 	Use:   "del",
 	Short: "Delete a task in todo",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return delete()
+		return delete(cmd)
 	},
 }
 
@@ -36,8 +36,8 @@ func init() {
 	delCmd.Flags().Int32P("id", "i", 0, "delete task in todo with given id")
 }
 
-func delete() error {
-	d, err := rootCmd.Flags().GetInt32("id")
+func delete(cmd *cobra.Command) error {
+	d, err := cmd.Flags().GetInt32("id")
 	if err != nil {
 		return fmt.Errorf("parsing done flag failed: %v", err)
 	}
@@ -47,6 +47,6 @@ func delete() error {
 		return fmt.Errorf("could not delete task in the backend: %v", err)
 	}
 
-	fmt.Println("task deleted successfully")
+	fmt.Printf("task with id: %v deleted successfully\n", d)
 	return nil
 }

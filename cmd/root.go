@@ -30,9 +30,10 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "ctodo",
-	Short: "ctodo is a command line utility that helps in managing your todo.",
-	Long:  `ctodo is a command line utility that helps in managing your todo. It uses gRPC for making remote calls and cobra as a cmd utility`,
+	Use:              "ctodo",
+	Short:            "ctodo is a command line utility that helps in managing your todo.",
+	Long:             `ctodo is a command line utility that helps in managing your todo. It uses gRPC for making remote calls and cobra as a cmd utility`,
+	TraverseChildren: true,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
