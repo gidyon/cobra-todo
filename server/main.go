@@ -74,14 +74,14 @@ func (tsv *todoTaskManager) Add(ctx context.Context, task *todo.Task) (*todo.Voi
 	if err != nil {
 		return nil, fmt.Errorf("reading todos failed: %v", err)
 	}
-
+	task.TaskId = int32(len(tasks.Tasks) + 1)
 	tasks.Tasks = append(tasks.Tasks, task)
 
 	err = marshalAndwriteToFile(tasks)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "could not marshal and write to file: %v", err)
 	}
-
+	log.Printf("task added - %v\n", task.String())
 	return &todo.Void{}, nil
 }
 
@@ -97,7 +97,7 @@ func (tsv *todoTaskManager) Delete(ctx context.Context, taskID *todo.TaskId) (*t
 
 	for i, task := range tasks.Tasks {
 		if task.GetTaskId() == taskID.GetTaskId() {
-			tasks.Tasks = append(tasks.Tasks[i:], tasks.Tasks[i+2:]...)
+			tasks.Tasks = append(tasks.Tasks[:i], tasks.Tasks[i+1:]...)
 			break
 		}
 	}
@@ -107,6 +107,7 @@ func (tsv *todoTaskManager) Delete(ctx context.Context, taskID *todo.TaskId) (*t
 		return nil, status.Errorf(codes.Internal, "could not marshal and write to file: %v", err)
 	}
 
+	log.Printf("task deleted - id: %v\n", taskID.GetTaskId())
 	return &todo.Void{}, nil
 }
 
@@ -132,6 +133,7 @@ func (tsv *todoTaskManager) Done(ctx context.Context, taskID *todo.TaskId) (*tod
 		return nil, status.Errorf(codes.Internal, "could not marshal and write to file: %v", err)
 	}
 
+	log.Printf("task with id: %v marked as done", taskID.GetTaskId())
 	return &todo.Void{}, nil
 }
 
